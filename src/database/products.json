@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Product name here",
+    "price": 10,
+    "description": "Description here",
+    "product": "Product type here",
+    "color": "Color here",
+    "createdAt": "Date here",
+    "image": "Image URL"
+  },
+  {
+    "id": 2,
+    "name": "Product name here 2",
+    "price": 20,
+    "description": "Description here",
+    "product": "Product type here",
+    "color": "Color here",
+    "createdAt": "Date here",
+    "image": "Image URL"
+  },
+  {
+    "id": 3,
+    "name": "Product name here 3",
+    "price": 30,
+    "description": "Description here",
+    "product": "Product type here",
+    "color": "Color here",
+    "createdAt": "Date here",
+    "image": "Image URL"
+  }
+]
