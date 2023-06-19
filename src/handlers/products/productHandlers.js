@@ -98,7 +98,7 @@ async function removeProduct(ctx) {
 }
 
 async function viewProducts(ctx) {
-    const products = await getAll();
+    const products = await getAll(10);
     await ctx.render('pages/products', { products })
 }
 
