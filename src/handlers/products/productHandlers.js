@@ -97,4 +97,9 @@ async function removeProduct(ctx) {
     }
 }
 
-export {getProducts, getProduct, removeProduct, createProduct, updateProduct};
+async function viewProducts(ctx) {
+    const products = await getAll();
+    await ctx.render('pages/products', { products })
+}
+
+export {getProducts, getProduct, removeProduct, createProduct, updateProduct, viewProducts};
