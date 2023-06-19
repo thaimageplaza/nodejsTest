@@ -1,5 +1,6 @@
 import Router from 'koa-router';
-import productHandler from '../handlers/products/productHandlers.js'
+import {productInputMiddleware, productInputUpdateMiddleware} from '../middleware/productInputMiddleware.js'
+import {getProducts, getProduct, removeProduct, createProduct, updateProduct} from '../handlers/products/productHandlers.js'
 
 // Prefix all routes with /books
 const router = new Router({
@@ -7,30 +8,15 @@ const router = new Router({
 });
 
 // Routes will go here
-router.get('/products', productHandler.getProducts);
+router.get('/products', getProducts);
 
-// router.get('/books/:id', (ctx) => {
-//     try {
-//         const {id} = ctx.params;
-//         const getCurrentBook = books.find(book => book.id === parseInt(id));
-//         if (getCurrentBook) {
-//             return ctx.body = {
-//                 data: getCurrentBook
-//             }
-//         }
-//
-//         ctx.status = 404;
-//         return ctx.body = {
-//             status: 'error!',
-//             message: 'Book Not Found with that id!'
-//         };
-//     } catch (e) {
-//         return ctx.body = {
-//             success: false,
-//             error: e.message
-//         }
-//     }
-// });
+router.get('/product/:id', getProduct);
+
+router.post('/products', productInputMiddleware, createProduct);
+
+router.put('/product/:id', productInputUpdateMiddleware, updateProduct);
+
+router.delete('/product/:id', removeProduct);
 
 
 // module.exports = router;
