@@ -8,11 +8,12 @@ import {getList, getOne, removeOne, addProduct, saveProduct} from './../../datab
 async function getProducts(ctx) {
     try {
         const {limit, sort} = ctx.query;
-        const products = getList({limit, orderBy: sort});
+        const orderBy = sort === 'asc' ? 1 : -1;
+        const products = await getList({limit, orderBy});
 
         ctx.body = {
             data: products
-        }
+        };
 
     } catch (e) {
         ctx.status = 404;
@@ -33,7 +34,7 @@ async function getProduct(ctx) {
     try {
         const {id} = ctx.params;
         const {fields} = ctx.query;
-        const products = getOne({id, fields});
+        const products = await getOne({id, fields})
 
         ctx.body = {
             data: products
@@ -106,12 +107,12 @@ async function updateProduct(ctx) {
 async function removeProduct(ctx) {
     try {
         const {id} = ctx.params;
-        removeOne({id});
+        await removeOne({id}).catch(console.dir);
 
         ctx.status = 201;
         return ctx.body = {
             success: true
-        }
+        };
     } catch (e) {
         ctx.status = 404;
         ctx.body = {

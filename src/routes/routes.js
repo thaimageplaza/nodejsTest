@@ -17,6 +17,6 @@ router.get('/api/products', getProducts);
 router.get('/api/product/:id', getProduct);
 router.post('/api/products', productInputMiddleware, createProduct);
 router.put('/api/product/:id', productInputUpdateMiddleware, updateProduct);
-router.delete('/product/:id', removeProduct);
+router.delete('/api/product/:id', removeProduct);
 
 export default router;

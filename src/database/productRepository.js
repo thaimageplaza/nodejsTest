@@ -1,7 +1,18 @@
 import fs from 'fs';
+import {MongoClient, ServerApiVersion} from 'mongodb';
 
 // const products = require('./products.json');
 import products from './products.json' assert {type: "json"};
+
+
+const mongoUri = "mongodb://172.16.238.10:27017";
+const client = new MongoClient(mongoUri, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true
+    }
+})
 
 /**
  *
@@ -20,34 +31,35 @@ const sortByHandle = (data, type) => {
 }
 
 /**
- *
- * @param object
- * @param keys
- * @returns {*}
- */
-function pick(object, keys) {
-    return keys.reduce((obj, key) => {
-        if (object && object.hasOwnProperty(key)) {
-            obj[key] = object[key];
-        }
-        return obj;
-    }, {});
-}
-
-/**
  * @param limit
  * @param orderBy
  * @returns {{}}
  */
-function getList({limit, orderBy}) {
-    let productData = products.data;
+async function getList({limit, orderBy}) {
+    let productData = [],
+        option = [];
+    try {
+        await client.connect();
 
-    if (orderBy) {
-        productData = sortByHandle(productData, orderBy);
-    }
+        if (orderBy) {
+            option.push({
+                $sort: { "accommodates": orderBy }
+            });
+        }
+        if (limit) {
+            option.push({
+                $limit: parseInt(limit)
+            });
+        }
 
-    if (limit) {
-        productData = productData.slice(0, limit);
+        const dbo = await client.db('products');
+        const productCollection = dbo.collection("products");
+        const findResult = await productCollection.aggregate(option);
+        for await (const doc of findResult) {
+            productData.push(doc);
+        }
+    } finally {
+        await client.close();
     }
 
     return productData;
@@ -59,11 +71,28 @@ function getList({limit, orderBy}) {
  * @param fields
  * @returns {{}|*}
  */
-function getOne({id, fields}) {
-    let productData = products.data.find(product => product.id === parseInt(id));
+async function getOne({id, fields}) {
+    let productData = [];
+    let options = {
+        projection: {
+            _id: 0
+        }
+    }
 
     if (fields) {
-        return pick(productData, fields);
+        fields.split(',').map(field => {
+            options.projection[field] = 1;
+        })
+    }
+
+    try {
+        await client.connect();
+        const dbo = await client.db('products');
+        const productCollection = dbo.collection("products");
+        const findResult = await productCollection.findOne({id: parseInt(id)}, options)
+        productData.push(findResult);
+    } finally {
+        await client.close();
     }
 
     return productData;
@@ -73,10 +102,16 @@ function getOne({id, fields}) {
  *
  * @param id
  */
-function removeOne({id}) {
-    const updatedProducts = products.data.filter(item => item.id !== parseInt(id));
-
-    return writeData(updatedProducts);
+async function removeOne({id}) {
+    let result = false;
+    try {
+        await client.connect();
+        const dbo = await client.db('products');
+        const productCollection = dbo.collection("products");
+        await productCollection.deleteOne({id: parseInt(id)});
+    } finally {
+        await client.close();
+    }
 }
 
 /**
