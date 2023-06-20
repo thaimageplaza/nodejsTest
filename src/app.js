@@ -17,9 +17,6 @@ render(app, {
     debug: true
 });
 
-// app.use(async function (ctx) {
-//     await ctx.render('user');
-// });
 app.use(koaBody());
 app.use(routes.routes());
 app.use(routes.allowedMethods());

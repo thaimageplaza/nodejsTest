@@ -1,9 +1,14 @@
-import {getAll, getOne, removeOne, addProduct, saveProduct} from './../../database/productRepository.js';
+import {getList, getOne, removeOne, addProduct, saveProduct} from './../../database/productRepository.js';
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<void>}
+ */
 async function getProducts(ctx) {
     try {
         const {limit, sort} = ctx.query;
-        const products = getAll(limit, sort);
+        const products = getList({limit, orderBy: sort});
 
         ctx.body = {
             data: products
@@ -19,11 +24,16 @@ async function getProducts(ctx) {
     }
 }
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<void>}
+ */
 async function getProduct(ctx) {
     try {
         const {id} = ctx.params;
         const {fields} = ctx.query;
-        const products = getOne(id, fields);
+        const products = getOne({id, fields});
 
         ctx.body = {
             data: products
@@ -39,10 +49,15 @@ async function getProduct(ctx) {
     }
 }
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<{success: boolean}>}
+ */
 async function createProduct(ctx) {
     try {
         const postData = ctx.request.body;
-        addProduct(postData);
+        addProduct({postData});
 
         ctx.status = 201;
         return ctx.body = {
@@ -58,11 +73,16 @@ async function createProduct(ctx) {
     }
 }
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<{success: boolean}>}
+ */
 async function updateProduct(ctx) {
     try {
         const {id} = ctx.params;
         const postData = ctx.request.body;
-        saveProduct(postData, id);
+        saveProduct({postData, id});
 
         ctx.status = 201;
         return ctx.body = {
@@ -78,10 +98,15 @@ async function updateProduct(ctx) {
     }
 }
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<{success: boolean}>}
+ */
 async function removeProduct(ctx) {
     try {
         const {id} = ctx.params;
-        removeOne(id);
+        removeOne({id});
 
         ctx.status = 201;
         return ctx.body = {
@@ -97,8 +122,13 @@ async function removeProduct(ctx) {
     }
 }
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<void>}
+ */
 async function viewProducts(ctx) {
-    const products = await getAll(10);
+    const products = await getList({limit: 10});
     await ctx.render('pages/products', { products })
 }
 
